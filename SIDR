@@ -1,0 +1,342 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "udp://1.1.1.1",
+        "address_resolver": "dns-direct"
+      },
+      {
+        "tag": "dns-trick-direct",
+        "address": "https://sky.rethinkdns.com/",
+        "detour": "direct-fragment"
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "address_resolver": "dns-local",
+        "detour": "direct"
+      },
+      {
+        "tag": "dns-local",
+        "address": "local",
+        "detour": "direct"
+      },
+      {
+        "tag": "dns-block",
+        "address": "rcode://success"
+      }
+    ],
+    "final": "dns-remote",
+    "static_ips": {
+      "sky.rethinkdns.com": [
+        "104.17.148.22",
+        "104.17.147.22",
+        "8.47.69.0",
+        "8.6.112.0",
+        "2a06:98c1:3122:8000::",
+        "2a06:98c1:3123:8000::"
+      ]
+    },
+    "independent_cache": true
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "mtu": 9000,
+      "inet4_address": "172.19.0.1/28",
+      "inet6_address": "fdfe:dcba:9876::1/126",
+      "auto_route": true,
+      "endpoint_independent_nat": true,
+      "stack": "gvisor",
+      "sniff": true
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 12334,
+      "sniff": true,
+      "sniff_override_destination": true
+    },
+    {
+      "type": "direct",
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "listen_port": 16450
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "select",
+      "outbounds": [
+        "auto",
+        "🇫🇮 Finland [*CIDR+SNI] vk § 0",
+        "🇷🇺 Russia [*CIDR+SNI] yandex § 1",
+        "🇳🇱 Netherlands [*CIDR+SNI] vk § 2",
+        "🇩🇪 Germany [*CIDR+SNI] yandex § 3",
+        "🇷🇺 Moscow [*CIDR+SNI] yandex § 4",
+        "🇷🇺 Moscow [*CIDR+SNI] vk § 5",
+        "🇩🇪 Germany [*CIDR+SNI] yandex § 6",
+        "🇳🇱 Netherlands [*CIDR+SNI] vk § 7"
+      ],
+      "default": "auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": [
+        "🇫🇮 Finland [*CIDR+SNI] vk § 0",
+        "🇷🇺 Russia [*CIDR+SNI] yandex § 1",
+        "🇳🇱 Netherlands [*CIDR+SNI] vk § 2",
+        "🇩🇪 Germany [*CIDR+SNI] yandex § 3",
+        "🇷🇺 Moscow [*CIDR+SNI] yandex § 4",
+        "🇷🇺 Moscow [*CIDR+SNI] vk § 5",
+        "🇩🇪 Germany [*CIDR+SNI] yandex § 6",
+        "🇳🇱 Netherlands [*CIDR+SNI] vk § 7"
+      ],
+      "url": "http://cp.cloudflare.com",
+      "interval": "10m0s",
+      "tolerance": 1,
+      "idle_timeout": "30m0s",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "vless",
+      "tag": "🇫🇮 Finland [*CIDR+SNI] vk § 0",
+      "server": "217.16.18.50",
+      "server_port": 443,
+      "uuid": "260a7608-2e68-468b-9faf-36d59f0ca598",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "ozon.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "l7cLIMrQQPS1LCyzgqCqP9O1rvoIanR9Npa3lYrz2xI",
+          "short_id": "296453e3e4"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇷🇺 Russia [*CIDR+SNI] yandex § 1",
+      "server": "51.250.106.64",
+      "server_port": 4248,
+      "uuid": "4a6de183-2ad3-456c-b420-feeac81f6257",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "ads.x5.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇳🇱 Netherlands [*CIDR+SNI] vk § 2",
+      "server": "217.16.24.53",
+      "server_port": 443,
+      "uuid": "011fb39c-15ed-4700-a338-67497533f94e",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.vk.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "wECjZXPpzOIAcE2my_sCH2zluFB4p9a3jpTugXhJ7gI",
+          "short_id": "69f3807321"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇩🇪 Germany [*CIDR+SNI] yandex § 3",
+      "server": "178.154.205.131",
+      "server_port": 443,
+      "uuid": "fd4b0117-d752-46fd-9a94-21a21e360fdb",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "ads.x5.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "r5WB5FnSCt4eeBC1FJMfkWHbzsMuabo0Rc6wuAhlZUs",
+          "short_id": "672ff0"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇷🇺 Moscow [*CIDR+SNI] yandex § 4",
+      "server": "51.250.28.39",
+      "server_port": 4248,
+      "uuid": "4a6de183-2ad3-456c-b420-feeac81f6257",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "api-maps.yandex.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc",
+          "short_id": "6ba85179e30d4fc2"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇷🇺 Moscow [*CIDR+SNI] vk § 5",
+      "server": "217.16.24.170",
+      "server_port": 443,
+      "uuid": "a91e64f0-9295-499d-bf4a-661ad99d4938",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "api-maps.yandex.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "8OsJx6xuHcpL_5e1w0U4bMBa-icevDgvvzNwPwZbORQ",
+          "short_id": "5540e44a53c3d01c"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇩🇪 Germany [*CIDR+SNI] yandex § 6",
+      "server": "51.250.25.11",
+      "server_port": 1488,
+      "uuid": "4a6de183-2ad3-456c-b420-feeac81f6257",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "ads.x5.ru",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc",
+          "short_id": "6ba85179e30d4fc2"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "vless",
+      "tag": "🇳🇱 Netherlands [*CIDR+SNI] vk § 7",
+      "server": "217.16.24.53",
+      "server_port": 443,
+      "uuid": "011fb39c-15ed-4700-a338-67497533f94e",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.vk.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "wECjZXPpzOIAcE2my_sCH2zluFB4p9a3jpTugXhJ7gI",
+          "short_id": "69f3807321"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out"
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "direct",
+      "tag": "direct-fragment",
+      "tls_fragment": {
+        "enabled": true,
+        "size": "10-30",
+        "sleep": "2-8"
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "bypass"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": "tun-in",
+        "package_name": "app.hiddify.com",
+        "outbound": "bypass"
+      },
+      {
+        "inbound": "dns-in",
+        "outbound": "dns-out"
+      },
+      {
+        "port": 53,
+        "outbound": "dns-out"
+      }
+    ],
+    "final": "select",
+    "auto_detect_interface": true,
+    "override_android_vpn": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "path": "clash.db"
+    },
+    "clash_api": {
+      "external_controller": "127.0.0.1:16756",
+      "secret": "BpLg6UkVWAiA0YRz"
+    }
+  }
+}
